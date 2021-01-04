@@ -49,7 +49,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
          * 反码 1011
          * 补码 = 反码 + 1 = 1100
          *
-         * return (val & val - 1) == 0;
+         * return (val & (val - 1)) == 0;
          */
         return (val & -val) == val;
     }
