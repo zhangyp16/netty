@@ -673,12 +673,13 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
         final AbstractNioChannel.NioUnsafe unsafe = ch.unsafe();
         if (!k.isValid()) {
+            // SelectionKey 无效
             final EventLoop eventLoop;
             try {
                 eventLoop = ch.eventLoop();
             } catch (Throwable ignored) {
                 // If the channel implementation throws an exception because there is no event loop, we ignore this
-                // because we are only trying to determine if ch is registered to this event loop and thus has authority
+                // because we are only trying to determine(确定) if ch is registered to this event loop and thus has authority
                 // to close ch.
                 return;
             }
@@ -694,8 +695,9 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
 
         try {
+            // 获取此键上ready操作集合.即在当前通道上已经就绪的事件
             int readyOps = k.readyOps();
-            // We first need to call finishConnect() before try to trigger a read(...) or write(...) as otherwise
+            // We first need to call finishConnect() before try to trigger(触发) a read(...) or write(...) as otherwise
             // the NIO JDK channel implementation may throw a NotYetConnectedException.
             if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
                 // remove OP_CONNECT as otherwise Selector.select(..) will always return without blocking
@@ -716,6 +718,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
             // to a spin loop
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+                // 注意，这里读事件和ACCEPT事件对应的unsafe实例是不一样的
+                // 读事件 -> NioByteUnsafe,  ACCEPT事件 -> NioMessageUnsafe
                 unsafe.read();
             }
         } catch (CancelledKeyException ignored) {

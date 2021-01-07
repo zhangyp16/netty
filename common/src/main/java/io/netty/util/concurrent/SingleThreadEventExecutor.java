@@ -978,6 +978,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                // 执行 run 方法时 赋值
                 thread = Thread.currentThread();
                 if (interrupted) {
                     thread.interrupt();
