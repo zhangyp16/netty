@@ -679,7 +679,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 eventLoop = ch.eventLoop();
             } catch (Throwable ignored) {
                 // If the channel implementation throws an exception because there is no event loop, we ignore this
-                // because we are only trying to determine(确定) if ch is registered to this event loop and thus has authority
+                // because we are only trying to determine(确定) if ch is registered to
+                // this event loop and thus has authority
                 // to close ch.
                 return;
             }
@@ -703,6 +704,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 // remove OP_CONNECT as otherwise Selector.select(..) will always return without blocking
                 // See https://github.com/netty/netty/issues/924
                 int ops = k.interestOps();
+                // ~ 按位取反   & 按位与
                 ops &= ~SelectionKey.OP_CONNECT;
                 k.interestOps(ops);
 
@@ -719,7 +721,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // to a spin loop
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
                 // 注意，这里读事件和ACCEPT事件对应的unsafe实例是不一样的
-                // 读事件 -> NioByteUnsafe,  ACCEPT事件 -> NioMessageUnsafe
+                // OP_READ 事件 -> AbstractNioByteChannel#NioByteUnsafe
+                // OP_ACCEPT 事件 -> AbstractNioMessageChannel#NioMessageUnsafe
                 unsafe.read();
             }
         } catch (CancelledKeyException ignored) {

@@ -111,6 +111,8 @@ public abstract class DefaultMaxMessagesRecvByteBufAllocator implements MaxMessa
 
         @Override
         public ByteBuf allocate(ByteBufAllocator alloc) {
+            // 当进行 Socket IO 读写的时候，为了避免从堆内存拷贝一份副本到直接内存，
+            // Netty 的 ByteBuf 分配器直接创建非堆内存避免缓冲区的二次拷贝，通过“零拷贝”来提升读写性能
             return alloc.ioBuffer(guess());
         }
 
